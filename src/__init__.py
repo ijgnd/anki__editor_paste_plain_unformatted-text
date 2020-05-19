@@ -1,5 +1,5 @@
 """
-nki add-on "paste plain"
+anki add-on "paste plain"
 License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 Copyright: 2019-ijgnd
            Ankitects Pty Ltd and contributors
@@ -34,6 +34,7 @@ import json
 import os
 
 from anki.hooks import addHook
+# from anki.utils import stripHTML
 from aqt import mw
 from aqt.qt import *
 
@@ -45,17 +46,16 @@ def gc(arg, fail=False):
     return fail
 
 
-def insert_plain(self):
-    clip = self.mw.app.clipboard()
+def insert_plain(editor):
+    clip = editor.mw.app.clipboard()
     try:
         textonly = clip.mimeData().text()
     except:
         textonly = ""
     if not textonly:
         return
-    # mod = textonly.replace("\n","<br>").replace(" ","&nbsp;")
-    mod = "<div>" + textonly.replace("\n", "</div><div>").replace(" ", "&nbsp;") + "</div>"
-    self.web.eval("document.execCommand('inserthtml', false, %s);" % json.dumps(mod))
+    mod = "<div>" + textonly.replace("\n", "</div><div>") + "</div>"  # .replace(" ", "&nbsp;")   #  "</br>"
+    editor.web.eval("""setFormat("insertHtml", %s);""" % json.dumps(mod))  # calls document.execCommand
 
 
 def keystr(k):
